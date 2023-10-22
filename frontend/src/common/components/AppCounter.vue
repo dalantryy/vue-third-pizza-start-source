@@ -1,14 +1,34 @@
 <template>
   <div class="counter counter--orange ingredients__counter">
-    <button type="button" class="counter__button counter__button--minus" disabled>
+    <button type="button" class="counter__button counter__button--minus" @click="$emit('decrement')" :disabled="disabledDecrement">
       <span class="visually-hidden">Меньше</span>
     </button>
-    <input type="text" name="counter" class="counter__input" value="0">
-    <button type="button" class="counter__button counter__button--plus">
+    <input type="text" name="counter" class="counter__input" :value="props.count">
+    <button type="button" class="counter__button counter__button--plus" @click="$emit('increment')" :disabled="disabledIncrement">
       <span class="visually-hidden">Больше</span>
     </button>
   </div>
 </template>
+
+<script setup>
+  const props = defineProps({
+    count:{
+      type: Number,
+      required: true
+    },
+    disabledDecrement: {
+      type: Boolean,
+      required: true
+    },
+    disabledIncrement: {
+      type: Boolean,
+      required: true
+    }
+  })
+
+  const emits = defineEmits(['decrement', 'increment'])
+
+</script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/ds-system/ds.scss";

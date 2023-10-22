@@ -7,11 +7,11 @@
 
       <div class="sheet__content dough">
         <label
-            v-for="doughItem in doughType"
-            :key="doughType.id"
+            v-for="doughItem in data.dough"
+            :key="doughItem.id"
             class="dough__input"
             :class="`dough__input--${doughItem.value}`"
-            @click="selectDough(doughItem.value)"
+            @click="selectDough(doughItem.id)"
         >
           <input type="radio" name="dough" :value=doughItem.value class="visually-hidden" checked>
           <b>{{doughItem.name}}</b>
@@ -22,23 +22,12 @@
   </div>
 </template>
 <script setup>
-  const props = defineProps({
-    doughType: {
-      type: Object,
-      required: true
-    },
-    resultPizza: {
-      type: Object,
-      required: true
-    }
-  })
-  const emits = defineEmits(['updateResultPizza'])
-  console.log('con dou',props)
-
+  import { useDataStore, usePizzaStore } from "@/store";
+  const data = useDataStore()
+  const pizza = usePizzaStore()
   function selectDough(item){
     console.log('select dough', item)
-    props.resultPizza.dough = item
-    emits('updateResultPizza', props.resultPizza)
+    pizza.doughId = item
   }
 
 </script>

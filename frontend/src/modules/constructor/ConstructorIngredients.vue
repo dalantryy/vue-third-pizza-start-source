@@ -9,10 +9,10 @@
           <p>Основной соус:</p>
 
           <label
-              v-for="sauce in saucesType"
+              v-for="sauce in data.sauces"
               :key="sauce.id"
               class="radio ingredients__input"
-              @click="selectSauce(sauce.value)"
+              @click="selectSauce(sauce.id)"
           >
             <input type="radio" name="sauce" :value='sauce.value' checked>
             <span>{{ sauce.name }}</span>
@@ -24,17 +24,29 @@
 
           <ul class="ingredients__list">
             <li
-                v-for="ingredient in ingredientsType"
-                :key="ingredient.id"
+                v-for="ingredient in data.ingredients"
                 class="ingredients__item"
             >
+                <app-drag
+                    :data-transfer="ingredient"
+                    :draggable="ingredientCount(ingredient.value) < 3"
+                >
+
                       <span
                           class="filling"
                           :class="`filling--${ingredient.value}`"
                       >
                         {{ ingredient.name }}
                       </span>
-              <app-counter/>
+                </app-drag>
+
+                <app-counter
+                    :count="ingredientCount(ingredient.value)"
+                    :disabledDecrement="ingredientCount(ingredient.value) === 0"
+                    :disabledIncrement="ingredientCount(ingredient.value) >= 3"
+                    @decrement="decrementCount(ingredient.value)"
+                    @increment="incrementCount(ingredient.value)"
+                />
             </li>
           </ul>
 
@@ -46,36 +58,43 @@
 
 </template>
 <script setup>
+import { useDataStore, usePizzaStore } from "@/store";
+
+import AppDrag from "@/common/components/AppDrag.vue";
 import AppCounter from "@/common/components/AppCounter.vue";
 
-const props = defineProps({
-  saucesType:{
-    type: Object,
-    required: true
-  },
-  ingredientsType:{
-    type: Object,
-    required: true
-  },
-  resultPizza:{
-    type: Object,
-    required: true
-  }
-})
+const data = useDataStore(),
+    pizza = usePizzaStore()
 
-const emits = defineEmits(['updateResultPizza'])
-console.log('con ing',props)
 
-function selectSauce(item){
+function selectSauce(item) {
   console.log('select sauce', item)
-  props.resultPizza.sauce = item
-  emits('updateResultPizza', props.resultPizza)
+  pizza.sauceId = item
+}
+
+function ingredientCount(item){
+  console.log(item)
+  const ingredient = pizza.getIngredientCount(item)
+  return ingredient
+}
+
+function incrementCount(item) {
+  // pizza.ingredients[item - 1].count++
+  // emits('updateResultPizza', props.resultPizza)
+console.log('get', pizza.incrementCount(item))
+
+}
+//
+function decrementCount(item) {
+  console.log('get', pizza.decrementCount(item))
+  // emits('updateResultPizza', props.resultPizza)
 }
 </script>
 
 <style lang="scss" scoped>
 @import '@/assets/scss/ds-system/ds';
 @import '@/assets/scss/mixins/mixins';
+
 .ingredients__sauce {
   display: flex;
   align-items: center;
@@ -129,4 +148,237 @@ function selectSauce(item){
   margin-top: 10px;
   margin-left: 36px;
 }
+
+.filling {
+  @include r-s14-h16;
+
+  position: relative;
+
+  display: block;
+
+  padding-left: 36px;
+
+  &::before {
+    @include p_center-v;
+
+    display: block;
+
+    width: 32px;
+    height: 32px;
+
+    content: "";
+
+    border-radius: 50%;
+    background-color: $white;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80% 80%;
+
+  }
+
+  &--tomatoes::before {
+    background-image: url("@/assets/img/filling/tomatoes.svg");
+  }
+
+  &--ananas::before {
+    background-image: url("@/assets/img/filling/ananas.svg");
+  }
+
+  &--bacon::before {
+    background-image: url("@/assets/img/filling/bacon.svg");
+  }
+
+  &--blue_cheese::before {
+    background-image: url("@/assets/img/filling/blue_cheese.svg");
+  }
+
+  &--cheddar::before {
+    background-image: url("@/assets/img/filling/cheddar.svg");
+  }
+
+  &--chile::before {
+    background-image: url("@/assets/img/filling/chile.svg");
+  }
+
+  &--ham::before {
+    background-image: url("@/assets/img/filling/ham.svg");
+  }
+
+  &--jalapeno::before {
+    background-image: url("@/assets/img/filling/jalapeno.svg");
+  }
+
+  &--mozzarella::before {
+    background-image: url("@/assets/img/filling/mozzarella.svg");
+  }
+
+  &--mushrooms::before {
+    background-image: url("@/assets/img/filling/mushrooms.svg");
+  }
+
+  &--olives::before {
+    background-image: url("@/assets/img/filling/olives.svg");
+  }
+
+  &--onion::before {
+    background-image: url("@/assets/img/filling/onion.svg");
+  }
+
+  &--parmesan::before {
+    background-image: url("@/assets/img/filling/parmesan.svg");
+  }
+
+  &--salami::before {
+    background-image: url("@/assets/img/filling/salami.svg");
+  }
+
+  &--salmon::before {
+    background-image: url("@/assets/img/filling/salmon.svg");
+  }
+}
+
+.counter {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+.counter__button {
+  $el: &;
+  $size_icon: 50%;
+
+  position: relative;
+
+  display: block;
+
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+
+  cursor: pointer;
+  transition: 0.3s;
+
+  border: none;
+  border-radius: 50%;
+  outline: none;
+
+  &--minus {
+    background-color: $purple-100;
+
+    &::before {
+      @include p_center-all;
+
+      width: $size_icon;
+      height: 2px;
+
+      content: "";
+
+      border-radius: 2px;
+      background-color: $black;
+    }
+
+    &:hover:not(:active):not(:disabled) {
+      background-color: $purple-200;
+    }
+
+    &:active:not(:disabled) {
+      background-color: $purple-300;
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: $shadow-regular;
+    }
+
+    &:disabled {
+      cursor: default;
+
+      &::before {
+        opacity: 0.1;
+      }
+    }
+  }
+
+  &--plus {
+    background-color: $green-500;
+
+    &::before {
+      @include p_center-all;
+
+      width: $size_icon;
+      height: 2px;
+
+      content: "";
+
+      border-radius: 2px;
+      background-color: $white;
+    }
+
+    &::after {
+      @include p_center-all;
+
+      width: $size_icon;
+      height: 2px;
+
+      content: "";
+      transform: translate(-50%, -50%) rotate(90deg);
+
+      border-radius: 2px;
+      background-color: $white;
+    }
+
+    &:hover:not(:active):not(:disabled) {
+      background-color: $green-400;
+    }
+
+    &:active:not(:disabled) {
+      background-color: $green-600;
+    }
+
+    &:focus:not(:disabled) {
+      box-shadow: $shadow-regular;
+    }
+
+    &:disabled {
+      cursor: default;
+
+      opacity: 0.3;
+    }
+  }
+
+  &--orange {
+    background-color: $orange-200;
+
+    &:hover:not(:active):not(:disabled) {
+      background-color: $orange-100;
+    }
+
+    &:active:not(:disabled) {
+      background-color: $orange-300;
+    }
+  }
+}
+
+.counter__input {
+  @include r-s14-h16;
+
+  box-sizing: border-box;
+  width: 22px;
+  margin: 0;
+  padding: 0 3px;
+
+  text-align: center;
+
+  color: $black;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background-color: transparent;
+
+  &:focus {
+    box-shadow: inset $shadow-regular;
+  }
+}
+
 </style>

@@ -19,7 +19,8 @@ export const sizesNorm = (size) => {
 export const ingredientsNorm = (ingredient) => {
     return {
         ...ingredient,
-        value: ingredients[ingredient.id]
+        value: ingredients[ingredient.id],
+        count: 0
     }
 }
 

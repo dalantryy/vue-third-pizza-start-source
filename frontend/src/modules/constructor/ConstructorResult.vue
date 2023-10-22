@@ -2,23 +2,41 @@
   <div class="content__constructor">
     <div
         class="pizza"
-        :class="props.pizza.pizzaClass"
+        :class="{
+          'pizza--foundation--small-tomato': pizzaStore.doughId === 1 && pizzaStore.sauceId === 1,
+          'pizza--foundation--big-tomato': pizzaStore.doughId === 2 && pizzaStore.sauceId === 1,
+          'pizza--foundation--big-creamy': pizzaStore.doughId === 2 && pizzaStore.sauceId === 2,
+          'pizza--foundation--small-creamy': pizzaStore.doughId === 1 && pizzaStore.sauceId === 2
+        }"
     >
-      <div class="pizza__wrapper">
-        <div class="pizza__filling pizza__filling--ananas"></div>
-        <div class="pizza__filling pizza__filling--bacon"></div>
-        <div class="pizza__filling pizza__filling--cheddar"></div>
-      </div>
+      <app-drop
+          @drop="moveIngredient"
+          class="pizza__wrapper"
+      >
+        <div
+            v-for="ingredient in pizzaStore.ingredients"
+            class="pizza__filling"
+            :class="generateFillingClass(ingredient.name, ingredient.count)"
+        >
+        </div>
+      </app-drop>
     </div>
   </div>
   <div>
-    <div>dough: {{ props.pizza.dough }}</div>
-    <div>sauce: {{ props.pizza.sauce }}</div>
-    <div>doughClass: {{ props.pizza.pizzaClass }}</div>
+    <div>dough: {{ pizzaStore.doughId }}</div>
+    <div>sauce: {{ pizzaStore.sauceId }}</div>
+    <div>size: {{ pizzaStore.sizeId }}</div>
+    <div>ingredients: {{ pizzaStore.ingredients }}</div>
   </div>
 </template>
 
 <script setup>
+  import AppDrop from "@/common/components/AppDrop.vue";
+  import AppButton from "@/common/components/AppButton.vue";
+
+  import { usePizzaStore } from "@/store";
+  const pizzaStore = usePizzaStore()
+
   const props = defineProps({
     pizza: {
       type: Object,
@@ -26,7 +44,27 @@
     }
   })
 
-  defineEmits(['updateResultPizza'])
+  const emits = defineEmits(['updateResultPizza', 'drop'])
+
+  function moveIngredient (ingredient) {
+    console.log(ingredient)
+    console.log(props.pizza)
+    props.pizza.ingredients[ingredient.id-1].count++
+    emits('updateResultPizza', props.pizza)
+  }
+
+  function generateFillingClass(value, count){
+    if (count < 1) return false
+
+    let fillingClass = 'pizza__filling--' + value
+    let countClass = ''
+    if (count === 2){
+      countClass = 'pizza__filling--second'
+    } else if (count === 3){
+      countClass = 'pizza__filling--third'
+    }
+    return fillingClass + ' ' + countClass
+  }
 
   console.log('con res',props.pizza)
 </script>

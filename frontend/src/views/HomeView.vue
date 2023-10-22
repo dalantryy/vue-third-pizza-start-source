@@ -9,26 +9,11 @@
             @updateResultPizza="updateResultPizza"
          />
 
-          <div
-              v-if="sizes.length"
-              class="content__diameter"
-          >
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">Выберите размер</h2>
-
-              <div class="sheet__content diameter">
-                <label
-                    v-for="size in sizesType"
-                    :key="size.id"
-                    class="diameter__input"
-                    :class="`diameter__input--${size.value}`"
-                >
-                  <input type="radio" name="diameter" :value=size.value class="visually-hidden">
-                  <span>{{ size.name }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
+          <constructor-size
+            :sizesType="sizesType"
+            :result-pizza="resultPizza"
+            @updateResultPizza="updateResultPizza"
+          />
 
           <constructor-ingredients
             :saucesType="saucesType"
@@ -36,6 +21,8 @@
             :resultPizza="resultPizza"
             @updateResultPizza="updateResultPizza"
           />
+
+
           <div class="content__pizza">
             <label class="input">
               <span class="visually-hidden">Название пиццы</span>
@@ -44,11 +31,11 @@
 
             <constructor-result
               :pizza="resultPizza"
-              :update-result-pizza="updateResultPizza"
+              @updateResultPizza="updateResultPizza"
             />
 
             <div class="content__result">
-              <p>Итого: 0 ₽</p>
+              <p>Итого: {{pizza.getFullPrice}} ₽</p>
               <app-button/>
             </div>
           </div>
@@ -67,28 +54,45 @@
   import sauces from "../mocks/sauces.json"
 
   //import helper func
-  import { reactive } from 'vue'
+  import {computed, reactive} from 'vue'
   import { doughSizesNorm, sizesNorm, ingredientsNorm, saucesNorm } from '../common/helpers/helper'
-  import AppCounter from "@/common/components/AppCounter.vue";
+
+  // import comp
   import AppButton from "@/common/components/AppButton.vue";
   import ConstructorDough from "@/modules/constructor/ConstructorDough.vue";
   import ConstructorResult from "@/modules/constructor/ConstructorResult.vue";
   import ConstructorIngredients from "@/modules/constructor/ConstructorIngredients.vue";
+  import ConstructorSize from "../modules/constructor/ConstructorSize.vue";
+  import { usePizzaStore } from "@/store";
 
+  // rebuild json
   const doughType = dough.map(doughSizesNorm)
   const sizesType = sizes.map(sizesNorm)
   const ingredientsType = ingredients.map(ingredientsNorm)
   const saucesType = sauces.map(saucesNorm)
 
-  // console.log('dough', doughType)
-  // console.log('sizes', sizesType)
-  // console.log('ingredients', ingredientsType)
-  // console.log('sauces', saucesType)
-
   const resultPizza = reactive({
     dough: 'large',
     sauce: 'creamy',
-    pizzaClass:'pizza--foundation--big-creamy'
+    pizzaClass:'pizza--foundation--big-creamy',
+    size: '',
+    ingredients:{...ingredientsType}
+  })
+
+  const pizza = usePizzaStore()
+  const price = computed(() => {
+    const { size, dough, sauce, ingredients } = resultPizza
+    const sizeMultiplier =
+        sizesType.find((item) => item.value === size)?.multiplier ?? 1;
+    const doughPrice =
+        doughType.find((item) => item.value === dough)?.price ?? 1;
+    const saucePrice =
+        saucesType.find((item) => item.value === sauce)?.price ?? 1;
+    const ingredientsPrice = ingredientsType
+        .map((item) => ingredients[item.id-1].count * item.price )
+        .reduce((acc, current) => acc + current)
+    let sum = sizeMultiplier * (doughPrice + saucePrice + ingredientsPrice)
+    return sum;
   })
 
   function updateResultPizza(pizza){

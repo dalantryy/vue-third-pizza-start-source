@@ -1,7 +1,7 @@
 <template>
   <div
-      :draggable="true"
-      @dragstart.self="onDrag"
+      :draggable="draggable"
+      @dragstart.self="onDragStart"
       @dragover.prevent
       @dragenter.prevent
   >
@@ -26,5 +26,6 @@ const props = defineProps({
 const onDragStart = ({ dataTransfer }) => {
   const data = JSON.stringify(props.dataTransfer);
   dataTransfer.setData(DATA_TRANSFER_PAYLOAD, data);
+  console.log('drag')
 };
 </script>
