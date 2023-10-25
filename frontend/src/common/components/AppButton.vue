@@ -1,6 +1,18 @@
 <template>
-  <button type="button" class="button" disabled>Готовьте!</button>
+  <button
+      type="button"
+      class="button"
+      :disabled="disabled">Готовьте!</button>
 </template>
+
+<script setup>
+  const props = defineProps({
+    disabled:{
+      type: Boolean,
+      required: true
+    }
+  })
+</script>
 
 <style lang="scss">
 @import "@/assets/scss/ds-system/ds.scss";

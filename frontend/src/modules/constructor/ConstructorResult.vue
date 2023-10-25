@@ -16,18 +16,18 @@
         <div
             v-for="ingredient in pizzaStore.ingredients"
             class="pizza__filling"
-            :class="generateFillingClass(ingredient.name, ingredient.count)"
+            :class="generateFillingClass(ingredient.value, ingredient.count)"
         >
         </div>
       </app-drop>
     </div>
   </div>
-  <div>
-    <div>dough: {{ pizzaStore.doughId }}</div>
-    <div>sauce: {{ pizzaStore.sauceId }}</div>
-    <div>size: {{ pizzaStore.sizeId }}</div>
-    <div>ingredients: {{ pizzaStore.ingredients }}</div>
-  </div>
+<!--  <div>-->
+<!--    <div>dough: {{ pizzaStore.doughId }}</div>-->
+<!--    <div>sauce: {{ pizzaStore.sauceId }}</div>-->
+<!--    <div>size: {{ pizzaStore.sizeId }}</div>-->
+<!--    <div>ingredients: {{ pizzaStore.ingredients }}</div>-->
+<!--  </div>-->
 </template>
 
 <script setup>
@@ -37,25 +37,15 @@
   import { usePizzaStore } from "@/store";
   const pizzaStore = usePizzaStore()
 
-  const props = defineProps({
-    pizza: {
-      type: Object,
-      required: true
-    }
-  })
 
-  const emits = defineEmits(['updateResultPizza', 'drop'])
+  const emits = defineEmits(['drop'])
 
   function moveIngredient (ingredient) {
-    console.log(ingredient)
-    console.log(props.pizza)
-    props.pizza.ingredients[ingredient.id-1].count++
-    emits('updateResultPizza', props.pizza)
+    pizzaStore.incrementCount(ingredient.value)
   }
 
   function generateFillingClass(value, count){
     if (count < 1) return false
-
     let fillingClass = 'pizza__filling--' + value
     let countClass = ''
     if (count === 2){
@@ -66,7 +56,7 @@
     return fillingClass + ' ' + countClass
   }
 
-  console.log('con res',props.pizza)
+  // console.log('con res',props.pizza)
 </script>
 
 <style lang="scss" scoped>

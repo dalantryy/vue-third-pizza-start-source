@@ -31,5 +31,12 @@ export const saucesNorm = (sauce) => {
     }
 }
 
+export const miscNorm = (misc) => {
+    return {
+        ...misc,
+        count: 0
+    }
+}
+
 export const MOVE = 'move';
 export const DATA_TRANSFER_PAYLOAD = 'payload';

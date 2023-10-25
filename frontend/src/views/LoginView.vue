@@ -1,20 +1,25 @@
 <template>
   <div class="sign-form">
-    <router-link :to="{name: 'home'}" class="close">
+    <router-link :to="{name: 'home'}" class="close close--white">
       <span class="visually-hidden">Закрыть форму авторизации</span>
     </router-link>
     <div class="sign-form__title">
       <h1 class="title title--small">Авторизуйтесь на сайте</h1>
     </div>
-    <form action="test.html" method="post">
+    <form
+        action="test.html"
+        method="post"
+        @submit.prevent="login"
+    >
       <div class="sign-form__input">
         <label class="input">
           <span>E-mail</span>
-          <input
-              type="email"
-              name="email"
-              placeholder="example@mail.ru"
-              v-model="email"
+          <app-input
+            v-model="email"
+            type="email"
+            name="email"
+            placeholder="user@user.com"
+            :errorText="errorMessage ? 'неправильный email' : ''"
           />
         </label>
       </div>
@@ -22,10 +27,11 @@
       <div class="sign-form__input">
         <label class="input">
           <span>Пароль</span>
-          <input
+          <app-input
               type="password"
               name="pass"
               placeholder="***********"
+              :errorText="errorMessage ? 'неправильный пароль' : ''"
               v-model="password"
           />
         </label>
@@ -33,15 +39,41 @@
       <button
           type="submit"
           class="button">Авторизоваться</button>
+      <div class="server-error">
+        {{ errorMessage }}
+      </div>
     </form>
   </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, watch, reactive } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from "@/store/auth";
+  import AppInput from "@/layouts/AppInput.vue";
+
+  const router = useRouter()
+  const auth = useAuthStore()
 
   const email = ref('')
   const password = ref('')
+  const errorMessage = ref(null);
+
+  const login = async () => {
+    const resMsg = await auth.login({
+      email: email.value,
+      password: password.value,
+    });
+
+    console.log(resMsg)
+    /* При успешной авторизации перенаправляем пользователя на главную страницу */
+    if (resMsg === "success") {
+      await auth.whoami();
+      await router.push({ name: "home" });
+    } else {
+      errorMessage.value = resMsg;
+    }
+  };
 </script>
 
 <style scoped>
@@ -60,7 +92,7 @@
   padding-right: 32px;
   padding-bottom: 32px;
   padding-left: 32px;
-  background: #ffffff url("../img/popup.svg") no-repeat center top;
+  background: #ffffff url("@/assets/img/popup.svg") no-repeat center top;
   -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
 }

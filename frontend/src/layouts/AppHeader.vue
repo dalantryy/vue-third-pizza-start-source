@@ -33,12 +33,37 @@
         </picture>
         <span>Василий Ложкин</span>
       </router-link>
-      <router-link :to="{ name: 'home' }" class="header__logout">
+      <router-link
+          v-if="auth.isAuthenticated"
+          :to="{ name: 'home' }"
+          class="header__logout"
+          @click="auth.logout()"
+      >
         <span>Выйти</span>
+      </router-link>
+      <router-link
+          v-else
+          :to="{ name: 'login'}"
+          class="header__login"
+          >
+        Войти
       </router-link>
     </div>
   </header>
 </template>
+
+<script setup>
+import { useAuthStore } from "@/store/auth";
+import { useRouter } from "vue-router";
+
+const auth = useAuthStore()
+const router = useRouter();
+
+const logout = async () => {
+  await auth.logout();
+  await router.replace({ name: "login" });
+};
+</script>
 
 <style lang="scss" scoped>
 @import '@/assets/scss/ds-system/ds.scss';
@@ -159,7 +184,7 @@
     content: '';
     vertical-align: middle;
 
-    background: url(../img/login.svg) no-repeat center;
+    background: url(@/assets/img/login.svg) no-repeat center;
     background-size: auto 50%;
   }
 }
@@ -176,7 +201,7 @@
     content: '';
     vertical-align: middle;
 
-    background: url(../img/login.svg) no-repeat center;
+    background: url(@/assets/img/login.svg) no-repeat center;
     background-size: auto 50%;
   }
 }

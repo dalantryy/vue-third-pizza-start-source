@@ -6,115 +6,85 @@
           <h1 class="title title--big">Корзина</h1>
         </div>
 
-        <!-- <div class="sheet cart__empty">
+        <div v-if='cart.pizzas.length < 1' class="sheet cart__empty">
           <p>В корзине нет ни одного товара</p>
-        </div> -->
+        </div>
 
-        <ul class="cart-list sheet">
-          <li class="cart-list__item">
+        <ul v-else class="cart-list sheet">
+          <li
+              class="cart-list__item"
+              v-for="pizza in cart.pizzas"
+          >
             <div class="product cart-list__product">
-              <img src="img/product.svg" class="product__img" width="56" height="56" alt="Капричоза">
+              <img src="@/assets/img/product.svg" class="product__img" width="56" height="56" alt="Капричоза">
               <div class="product__text">
-                <h2>Капричоза</h2>
+                <h2>{{ pizza.name }}</h2>
                 <ul>
-                  <li>30 см, на тонком тесте</li>
-                  <li>Соус: томатный</li>
-                  <li>Начинка: грибы, лук, ветчина, пармезан, ананас</li>
+                  <li>{{ pizza.size.name }}, на {{ pizza.dough.name }} тесте</li>
+                  <li>Соус: {{ pizza.sauce.name }}</li>
+                  <li>Начинка:
+                    <span v-for="ingredient in pizza.ingredients">
+                      <span v-if="ingredient.count > 0">
+                      {{ ingredient.name }}
+                        </span>
+                    </span>
+                  </li>
                 </ul>
               </div>
             </div>
 
             <app-counter
-                          disabled-increment="true"
-                          disabled-decrement="false"
-                         count="2"/>
+                :count="pizza.count"
+                :disabledDecrement="pizza.count === 0"
+                :disabledIncrement="false"
+                @decrement="cart.decrementPizza(pizza.index)"
+                @increment="cart.incrementPizza(pizza.index)"
+            />
 
             <div class="cart-list__price">
-              <b>782 ₽</b>
+              <b>{{ pizza.price }} ₽</b>
             </div>
 
-            <div class="cart-list__button">
-              <button type="button" class="cart-list__edit">Изменить</button>
-            </div>
-          </li>
-          <li class="cart-list__item">
-            <div class="product cart-list__product">
-              <img src="img/product.svg" class="product__img" width="56" height="56" alt="Любимая пицца">
-              <div class="product__text">
-                <h2>Любимая пицца</h2>
-                <ul>
-                  <li>30 см, на тонком тесте</li>
-                  <li>Соус: томатный</li>
-                  <li>Начинка: грибы, лук, ветчина, пармезан, ананас, бекон, блю чиз</li>
-                </ul>
+            <router-link to="/">
+              <div class="cart-list__button">
+                <button
+                    type="button"
+                    class="cart-list__edit"
+                    @click="pizzaStore.editPizza(pizza)"
+                >
+                  Изменить
+                </button>
               </div>
-            </div>
-
-            <app-counter
-                disabled-increment="true"
-                disabled-decrement="false"
-                count="2"/>
-
-            <div class="cart-list__price">
-              <b>782 ₽</b>
-            </div>
-
-            <div class="cart-list__button">
-              <button type="button" class="cart-list__edit">Изменить</button>
-            </div>
+            </router-link>
           </li>
         </ul>
 
         <div class="cart__additional">
           <ul class="additional-list">
-            <li class="additional-list__item sheet">
+            <li
+                class="additional-list__item sheet"
+                v-for="misc in cart.misc"
+            >
               <p class="additional-list__description">
-                <img src="img/cola.svg" width="39" height="60" alt="Coca-Cola 0,5 литра">
-                <span>Coca-Cola 0,5 литра</span>
+                <img
+                    :src="`@/assets/img/${misc.image}.svg`"
+                    width="39"
+                    height="60"
+                    :alt="`${misc.name}`">
+                <span>{{misc.name}}</span>
               </p>
 
               <div class="additional-list__wrapper">
-                <app-counter
-                    disabled-increment="true"
-                    disabled-decrement="false"
-                    count="2"/>
+                                <app-counter
+                                    :count="misc.count"
+                                    :disabledDecrement="misc.count === 0"
+                                    :disabledIncrement="false"
+                                    @decrement="cart.decrementMiscCount(misc.id)"
+                                    @increment="cart.incrementMiscCount(misc.id)"
+                                />
 
                 <div class="additional-list__price">
-                  <b>× 56 ₽</b>
-                </div>
-              </div>
-            </li>
-            <li class="additional-list__item sheet">
-              <p class="additional-list__description">
-                <img src="img/sauce.svg" width="39" height="60" alt="Острый соус">
-                <span>Острый соус</span>
-              </p>
-
-              <div class="additional-list__wrapper">
-                <app-counter
-                    disabled-increment="true"
-                    disabled-decrement="false"
-                    count="2"/>
-
-                <div class="additional-list__price">
-                  <b>× 30 ₽</b>
-                </div>
-              </div>
-            </li>
-            <li class="additional-list__item sheet">
-              <p class="additional-list__description">
-                <img src="img/potato.svg" width="39" height="60" alt="Картошка из печи">
-                <span>Картошка из печи</span>
-              </p>
-
-              <div class="additional-list__wrapper">
-                <app-counter
-                    disabled-increment="true"
-                    disabled-decrement="false"
-                    count="2"/>
-
-                <div class="additional-list__price">
-                  <b>× 56 ₽</b>
+                  <b>× {{misc.price}} ₽</b>
                 </div>
               </div>
             </li>
@@ -178,7 +148,7 @@
       </div>
       <p class="footer__text">Перейти к конструктору<br>чтоб собрать ещё одну пиццу</p>
       <div class="footer__price">
-        <b>Итого: 2 228 ₽</b>
+        <b>Итого: {{cart.getCartFullPrice}} ₽</b>
       </div>
 
       <div class="footer__submit">
@@ -189,9 +159,14 @@
 </template>
 
 <script setup>
-
 import AppCounter from "@/common/components/AppCounter.vue";
+import {useCartStore, usePizzaStore} from "../store";
+
+const cart = useCartStore()
+const pizzaStore = usePizzaStore()
+// console.log('cart', cart.getPizza)
 </script>
+
 
 <style scoped>
 

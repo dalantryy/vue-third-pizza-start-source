@@ -13,7 +13,12 @@
             :class="`dough__input--${doughItem.value}`"
             @click="selectDough(doughItem.id)"
         >
-          <input type="radio" name="dough" :value=doughItem.value class="visually-hidden" checked>
+          <input
+              type="radio"
+              name="dough"
+              :value='doughItem.value'
+              class="visually-hidden"
+              :checked = 'doughItem.id === pizza.doughId'>
           <b>{{doughItem.name}}</b>
           <span>{{doughItem.description}}</span>
         </label>
@@ -25,6 +30,8 @@
   import { useDataStore, usePizzaStore } from "@/store";
   const data = useDataStore()
   const pizza = usePizzaStore()
+
+  console.log('hone', pizza)
   function selectDough(item){
     console.log('select dough', item)
     pizza.doughId = item

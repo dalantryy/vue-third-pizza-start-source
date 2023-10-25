@@ -13,7 +13,13 @@
             :class="`diameter__input--${size.value}`"
             @click="selectSize(size.id)"
         >
-          <input type="radio" name="diameter" :value=size.value class="visually-hidden">
+          <input
+              type="radio"
+              name="diameter"
+              :value=size.value
+              class="visually-hidden"
+              :checked = 'size.id === pizza.sizeId'
+          >
           <span>{{ size.name }}</span>
         </label>
       </div>

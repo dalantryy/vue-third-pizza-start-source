@@ -4,39 +4,39 @@
         <div class="content__wrapper">
           <h1 class="title title--big">Конструктор пиццы</h1>
          <constructor-dough
-            :dough-type="doughType"
-            :result-pizza="resultPizza"
-            @updateResultPizza="updateResultPizza"
          />
 
           <constructor-size
-            :sizesType="sizesType"
-            :result-pizza="resultPizza"
-            @updateResultPizza="updateResultPizza"
           />
 
           <constructor-ingredients
-            :saucesType="saucesType"
-            :ingredientsType="ingredientsType"
-            :resultPizza="resultPizza"
-            @updateResultPizza="updateResultPizza"
           />
 
 
           <div class="content__pizza">
             <label class="input">
               <span class="visually-hidden">Название пиццы</span>
-              <input type="text" name="pizza_name" placeholder="Введите название пиццы">
+              <input
+                  type="text"
+                  name="pizza_name"
+                  placeholder="Введите название пиццы"
+                  :value="pizza.name"
+                  @input="event => pizza.name = event.target.value"
+              >
             </label>
 
             <constructor-result
-              :pizza="resultPizza"
-              @updateResultPizza="updateResultPizza"
             />
 
             <div class="content__result">
               <p>Итого: {{pizza.getFullPrice}} ₽</p>
-              <app-button/>
+
+              <router-link to="/cart">
+                <app-button
+                    :disabled="!disabledButton()"
+                    @click="pizza.addToCart"
+                />
+              </router-link>
             </div>
           </div>
 
@@ -47,16 +47,6 @@
 </template>
 
 <script setup>
-  //imports json
-  import dough from '../mocks/dough.json'
-  import sizes from '../mocks/sizes.json'
-  import ingredients from '../mocks/ingredients.json'
-  import sauces from "../mocks/sauces.json"
-
-  //import helper func
-  import {computed, reactive} from 'vue'
-  import { doughSizesNorm, sizesNorm, ingredientsNorm, saucesNorm } from '../common/helpers/helper'
-
   // import comp
   import AppButton from "@/common/components/AppButton.vue";
   import ConstructorDough from "@/modules/constructor/ConstructorDough.vue";
@@ -65,49 +55,16 @@
   import ConstructorSize from "../modules/constructor/ConstructorSize.vue";
   import { usePizzaStore } from "@/store";
 
-  // rebuild json
-  const doughType = dough.map(doughSizesNorm)
-  const sizesType = sizes.map(sizesNorm)
-  const ingredientsType = ingredients.map(ingredientsNorm)
-  const saucesType = sauces.map(saucesNorm)
-
-  const resultPizza = reactive({
-    dough: 'large',
-    sauce: 'creamy',
-    pizzaClass:'pizza--foundation--big-creamy',
-    size: '',
-    ingredients:{...ingredientsType}
-  })
-
   const pizza = usePizzaStore()
-  const price = computed(() => {
-    const { size, dough, sauce, ingredients } = resultPizza
-    const sizeMultiplier =
-        sizesType.find((item) => item.value === size)?.multiplier ?? 1;
-    const doughPrice =
-        doughType.find((item) => item.value === dough)?.price ?? 1;
-    const saucePrice =
-        saucesType.find((item) => item.value === sauce)?.price ?? 1;
-    const ingredientsPrice = ingredientsType
-        .map((item) => ingredients[item.id-1].count * item.price )
-        .reduce((acc, current) => acc + current)
-    let sum = sizeMultiplier * (doughPrice + saucePrice + ingredientsPrice)
-    return sum;
-  })
 
-  function updateResultPizza(pizza){
-    console.log('result', pizza)
-    if (pizza.dough === 'light' && pizza.sauce === 'tomato'){
-      resultPizza.pizzaClass = 'pizza--foundation--small-tomato'
-    } else if (pizza.dough === 'large' && pizza.sauce === 'tomato'){
-      resultPizza.pizzaClass = 'pizza--foundation--big-tomato'
-    } else if (pizza.dough === 'large' && pizza.sauce === 'creamy') {
-      resultPizza.pizzaClass = 'pizza--foundation--big-creamy'
-    } else if (pizza.dough === 'light' && pizza.sauce === 'creamy'){
-      resultPizza.pizzaClass = 'pizza--foundation--small-creamy'
-    }
+  function disabledButton(){
+    const ingredients = pizza.ingredients
+        .map((el) => el.count)
+        .reduce((acc, val) => acc + val)
+
+    console.log(ingredients)
+    return pizza.doughId  && pizza.sauceId  && pizza.sizeId && ingredients > 0
   }
-
 </script>
 
 <style lang="scss">

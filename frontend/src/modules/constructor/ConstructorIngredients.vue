@@ -14,7 +14,11 @@
               class="radio ingredients__input"
               @click="selectSauce(sauce.id)"
           >
-            <input type="radio" name="sauce" :value='sauce.value' checked>
+            <input
+                type="radio"
+                name="sauce"
+                :value='sauce.value'
+                :checked = 'sauce.id === pizza.sauceId'>
             <span>{{ sauce.name }}</span>
           </label>
         </div>
@@ -29,7 +33,7 @@
             >
                 <app-drag
                     :data-transfer="ingredient"
-                    :draggable="ingredientCount(ingredient.value) < 3"
+                    :draggable="ingredient.count < 3"
                 >
 
                       <span
@@ -41,11 +45,11 @@
                 </app-drag>
 
                 <app-counter
-                    :count="ingredientCount(ingredient.value)"
-                    :disabledDecrement="ingredientCount(ingredient.value) === 0"
-                    :disabledIncrement="ingredientCount(ingredient.value) >= 3"
-                    @decrement="decrementCount(ingredient.value)"
-                    @increment="incrementCount(ingredient.value)"
+                    :count="ingredient.count"
+                    :disabledDecrement="ingredient.count === 0"
+                    :disabledIncrement="ingredient.count >= 3"
+                    @decrement="pizza.decrementCount(ingredient.value)"
+                    @increment="pizza.incrementCount(ingredient.value)"
                 />
             </li>
           </ul>
@@ -72,23 +76,6 @@ function selectSauce(item) {
   pizza.sauceId = item
 }
 
-function ingredientCount(item){
-  console.log(item)
-  const ingredient = pizza.getIngredientCount(item)
-  return ingredient
-}
-
-function incrementCount(item) {
-  // pizza.ingredients[item - 1].count++
-  // emits('updateResultPizza', props.resultPizza)
-console.log('get', pizza.incrementCount(item))
-
-}
-//
-function decrementCount(item) {
-  console.log('get', pizza.decrementCount(item))
-  // emits('updateResultPizza', props.resultPizza)
-}
 </script>
 
 <style lang="scss" scoped>

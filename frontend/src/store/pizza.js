@@ -1,43 +1,38 @@
-import { defineStore } from "pinia";
-import { useDataStore } from "@/store/data";
+import {defineStore} from "pinia";
+import {useDataStore} from "@/store/data";
+import {useCartStore} from "./cart";
+// import ingredients from "../common/data/ingredients";
 
+const data = useDataStore()
+
+const ingredientsArray = []
+for (let ing in data.ingredients) {
+    ingredientsArray.push(data.ingredients[ing])
+}
+console.log('ingredientsPizza', ingredientsArray)
 export const usePizzaStore = defineStore('pizza', {
     state: () => ({
         index: null,
         name: '',
         doughId: 1,
         sauceId: 1,
-        ingredients: [
-            {
-                name: 'mushrooms',
-                count: 2
-            },
-            {
-                name: 'onion',
-                count: 1
-            }
-        ],
-        sizeId: 0
+        ingredients: ingredientsArray,
+        sizeId: 1
     }),
     getters: {
         incrementCount: state => {
             return item => state.ingredients.find((i) => {
-                if(i.name === item){
+                if (i.value === item) {
                     i.count++
                 }
-                return i.name === item
             })
         },
         decrementCount: state => {
             return item => state.ingredients.find((i) => {
-                if(i.name === item){
+                if (i.value === item) {
                     i.count--
                 }
-                return i.name === item
             })
-        },
-        getIngredientCount: state => {
-            return item => state.ingredients.find((i) => i.name === item)
         },
         getFullPrice: state => {
             const data = useDataStore()
@@ -47,17 +42,50 @@ export const usePizzaStore = defineStore('pizza', {
 
             const ingredients = state.ingredients
             const ingredientsPrice = ingredients
-                .map((item) => data.ingredients.find((i) => {
-                    if(i.value === item.name){
-                        i.count = item.count
-                    }
-                    return i.value === item.name
-                }))
                 .reduce((acc, val) => acc + (val.price * val.count), 0)
 
-            console.log('test', ingredientsPrice)
             return (dough.price + sauce.price + ingredientsPrice) * size.multiplier
         }
     },
-    actions: {}
+    actions: {
+        addToCart() {
+            const cart = useCartStore()
+            const data = useDataStore()
+
+            const dough = data.dough.find((i) => i.id === this.doughId)
+            const size = data.sizes.find((i) => i.id === this.sizeId)
+            const sauce = data.sauces.find((i) => i.id === this.sauceId)
+
+            const pizza = {
+                index: this.index === null ? cart.pizzas.length : this.index,
+                name: this.name,
+                dough: dough,
+                sauce: sauce,
+                ingredients: this.ingredients,
+                size: size,
+                price: this.getFullPrice,
+                count: 1
+            }
+            cart.addPizza(pizza)
+
+            this.$reset()
+        },
+        editPizza(pizza) {
+            console.log(pizza)
+            // const ingredients = pizza.ingredients
+            //
+            // ingredients.forEach()
+            // this.ingredients.find((i) => {
+            //     if(i.id === )
+            // })
+
+
+            this.index = pizza.index
+            this.name = pizza.name
+            this.doughId = pizza.dough.id
+            this.sauceId = pizza.sauce.id
+            this.ingredients = pizza.ingredients
+            this.sizeId = pizza.size.id
+        }
+    }
 })
