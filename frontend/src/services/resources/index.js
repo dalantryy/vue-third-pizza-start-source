@@ -11,7 +11,7 @@ export default {
     address: new AddressResource(),
     auth: new AuthResource(),
     dough: new DoughResource(),
-    ingredient: new IngredientsResource(),
+    ingredients: new IngredientsResource(),
     misc: new MiscResources(),
     order: new OrdersResources(),
     sauce: new SauceResources(),

@@ -60,7 +60,7 @@
   function disabledButton(){
     const ingredients = pizza.ingredients
         .map((el) => el.count)
-        .reduce((acc, val) => acc + val)
+        .reduce((acc, val) => acc + val, 0)
 
     console.log(ingredients)
     return pizza.doughId  && pizza.sauceId  && pizza.sizeId && ingredients > 0

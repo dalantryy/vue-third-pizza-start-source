@@ -22,6 +22,9 @@
             :errorText="errorMessage ? 'неправильный email' : ''"
           />
         </label>
+        <div class="sign-form__input-error">
+          {{ validations.email.error }}
+        </div>
       </div>
 
       <div class="sign-form__input">
@@ -35,6 +38,9 @@
               v-model="password"
           />
         </label>
+        <div class="sign-form__input-error">
+          {{ validations.email.error }}
+        </div>
       </div>
       <button
           type="submit"
@@ -50,23 +56,61 @@
   import { ref, watch, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from "@/store/auth";
+  import { clearValidationErrors, validateFields } from "@/common/validator";
   import AppInput from "@/layouts/AppInput.vue";
 
   const router = useRouter()
   const auth = useAuthStore()
 
+
+  const resetValidations = () => {
+    return {
+      email: {
+        error: "",
+        rules: ["required", "email"],
+      },
+      password: {
+        error: "",
+        rules: ["required"],
+      },
+    };
+  };
   const email = ref('')
   const password = ref('')
   const errorMessage = ref(null);
+  const validations = ref(resetValidations());
+
+  const watchField = (field) => () => {
+    if (errorMessage.value) {
+      errorMessage.value = null;
+    }
+    if (validations.value[field]?.error) {
+      clearValidationErrors(validations.value);
+    }
+  };
+
+  watch(email, watchField("email"));
+  watch(password, watchField("password"));
 
   const login = async () => {
+    const isValid = validateFields(
+        { email: email.value, password: password.value },
+        validations.value
+    );
+
+    console.log(isValid)
+
+    if (!isValid) {
+      return;
+    }
+
     const resMsg = await auth.login({
       email: email.value,
       password: password.value,
     });
 
-    console.log(resMsg)
-    /* При успешной авторизации перенаправляем пользователя на главную страницу */
+    console.log('login', resMsg)
+
     if (resMsg === "success") {
       await auth.whoami();
       await router.push({ name: "home" });

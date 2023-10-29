@@ -11,33 +11,28 @@
       </router-link>
     </div>
     <div class="header__cart">
-      <router-link :to="{ name: 'cart' }">0 ₽</router-link>
+      <router-link :to="{ name: 'cart' }">{{ cart.getCartFullPrice}} ₽</router-link>
     </div>
     <div class="header__user">
-      <router-link :to="{ name: 'profile' }">
+      <router-link
+          v-if="auth.user"
+          :to="{ name: 'profile' }"
+      >
         <picture>
-          <source
-              type="image/webp"
-              srcset="
-              @/assets/img/users/user5.webp    1x,
-              @/assets/img/users/user5@2x.webp 2x
-            "
-          />
           <img
-              src="@/assets/img/users/user5.jpg"
-              srcset="@/assets/img/users/user5@2x.jpg"
-              alt="Василий Ложкин"
+              :src="auth.user.avatar"
+              :alt="auth.user.name"
               width="32"
               height="32"
           />
         </picture>
-        <span>Василий Ложкин</span>
+        <span>{{ auth.user.name }}</span>
       </router-link>
       <router-link
           v-if="auth.isAuthenticated"
           :to="{ name: 'home' }"
           class="header__logout"
-          @click="auth.logout()"
+          @click="logout"
       >
         <span>Выйти</span>
       </router-link>
@@ -54,10 +49,14 @@
 
 <script setup>
 import { useAuthStore } from "@/store/auth";
+import { useCartStore } from "@/store";
 import { useRouter } from "vue-router";
 
 const auth = useAuthStore()
+const cart = useCartStore()
 const router = useRouter();
+
+console.log('user', auth.user)
 
 const logout = async () => {
   await auth.logout();

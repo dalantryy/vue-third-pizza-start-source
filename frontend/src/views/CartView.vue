@@ -98,9 +98,22 @@
               <span class="cart-form__label">Получение заказа:</span>
 
               <select name="test" class="select">
-                <option value="1">Заберу сам</option>
-                <option value="2">Новый адрес</option>
-                <option value="3">Дом</option>
+                <option
+                    value="1"
+                >
+                  Заберу сам
+                </option>
+                <option
+                    value="2"
+                >
+                  Новый адрес
+                </option>
+                <option
+                    v-for="address in profile.addresses"
+                    :value="address.id"
+                >
+                  {{address.name}}
+                </option>
               </select>
             </label>
 
@@ -109,7 +122,10 @@
               <input type="text" name="tel" placeholder="+7 999-999-99-99">
             </label>
 
-            <div class="cart-form__address">
+            <div
+                v-if="deliveryType === 'address'"
+                class="cart-form__address"
+            >
               <span class="cart-form__label">Новый адрес:</span>
 
               <div class="cart-form__input">
@@ -160,10 +176,14 @@
 
 <script setup>
 import AppCounter from "@/common/components/AppCounter.vue";
-import {useCartStore, usePizzaStore} from "../store";
+import {useCartStore, usePizzaStore, useProfileStore} from "../store";
+import { ref } from 'vue'
 
 const cart = useCartStore()
 const pizzaStore = usePizzaStore()
+const profile = useProfileStore()
+
+const deliveryType = ref('restaurant')
 // console.log('cart', cart.getPizza)
 </script>
 

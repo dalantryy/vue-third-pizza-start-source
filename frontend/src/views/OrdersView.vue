@@ -156,3 +156,14 @@
     <p class="order__address">Адрес доставки: Тест (или если адрес новый - писать целиком)</p>
   </section>
 </template>
+
+<script setup>
+  import {onMounted} from "vue";
+  import { useHistoryStore } from "@/store/history";
+
+  const history = useHistoryStore()
+
+  onMounted(async () => {
+    await history.getOrders()
+  })
+</script>

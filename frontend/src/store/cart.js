@@ -1,14 +1,12 @@
 import { defineStore } from "pinia";
 import { useDataStore } from "./data";
 
-const data = useDataStore()
-
-
+// const data = useDataStore()
 // console.log(data.misc)
 export const useCartStore = defineStore('cart', {
     state: () => ({
         pizzas: [],
-        misc: [...data.misc],
+        misc: [],
         phone: '',
         address: {
             street: '',
@@ -16,7 +14,6 @@ export const useCartStore = defineStore('cart', {
             flat: '',
             comment: ''
         }
-
     }),
     getters: {
         incrementPizza: state => {
@@ -58,6 +55,9 @@ export const useCartStore = defineStore('cart', {
         addPizza(pizza){
             this.pizzas[pizza.index] = pizza
         },
+        createOrder(){
+
+        }
 
     }
 })

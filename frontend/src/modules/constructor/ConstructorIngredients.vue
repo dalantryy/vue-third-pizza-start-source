@@ -33,7 +33,7 @@
             >
                 <app-drag
                     :data-transfer="ingredient"
-                    :draggable="ingredient.count < 3"
+                    :draggable="pizza.getIngredientCount(ingredient) < 3"
                 >
 
                       <span
@@ -43,13 +43,12 @@
                         {{ ingredient.name }}
                       </span>
                 </app-drag>
-
                 <app-counter
-                    :count="ingredient.count"
-                    :disabledDecrement="ingredient.count === 0"
-                    :disabledIncrement="ingredient.count >= 3"
-                    @decrement="pizza.decrementCount(ingredient.value)"
-                    @increment="pizza.incrementCount(ingredient.value)"
+                    :count="pizza.getIngredientCount(ingredient)"
+                    :disabledDecrement="pizza.getIngredientCount(ingredient) === 0"
+                    :disabledIncrement="pizza.getIngredientCount(ingredient) >= 3"
+                    @decrement="pizza.decrementCount(ingredient)"
+                    @increment="pizza.incrementCount(ingredient)"
                 />
             </li>
           </ul>
@@ -63,13 +62,13 @@
 </template>
 <script setup>
 import { useDataStore, usePizzaStore } from "@/store";
+import { computed } from "vue";
 
 import AppDrag from "@/common/components/AppDrag.vue";
 import AppCounter from "@/common/components/AppCounter.vue";
 
 const data = useDataStore(),
     pizza = usePizzaStore()
-
 
 function selectSauce(item) {
   console.log('select sauce', item)

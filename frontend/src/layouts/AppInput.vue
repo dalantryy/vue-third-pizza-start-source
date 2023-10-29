@@ -7,8 +7,6 @@
       :placeholder="placeholder"
       @input="$emit('update:modelValue', $event.target.value)"
   />
-
-    <div>{{errorText}}</div>
   </div>
 </template>
 <script setup>
@@ -28,14 +26,10 @@
     placeholder: {
       type: String,
       required: true
-    },
-    errorText: {
-      type: String,
-      required: true
     }
   })
 
   defineEmits(['update:modelValue'])
 
-  console.log(props.modelValue)
+  console.log(props.name,props.modelValue)
 </script>

@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("auth", {
         },
         async login(credentials) {
             const res = await resources.auth.login(credentials);
-            if(res.__state) {
+            if(res.__state === 'success') {
                 jwtService.saveToken(res.data.token)
                 return 'success';
             } else {
