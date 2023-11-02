@@ -62,7 +62,6 @@
         .map((el) => el.count)
         .reduce((acc, val) => acc + val, 0)
 
-    console.log(ingredients)
     return pizza.doughId  && pizza.sauceId  && pizza.sizeId && ingredients > 0
   }
 </script>

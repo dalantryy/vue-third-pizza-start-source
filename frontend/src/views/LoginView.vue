@@ -98,8 +98,6 @@
         validations.value
     );
 
-    console.log(isValid)
-
     if (!isValid) {
       return;
     }

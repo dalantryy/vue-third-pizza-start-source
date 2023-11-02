@@ -31,9 +31,7 @@
   const data = useDataStore()
   const pizza = usePizzaStore()
 
-  console.log('hone', pizza)
   function selectDough(item){
-    console.log('select dough', item)
     pizza.doughId = item
   }
 

@@ -8,8 +8,6 @@ const ingredients = await resources.ingredients.getIngredients()
 const sauces = await resources.sauce.getSauces()
 const misc = await resources.misc.getMiscs()
 
-console.log(ingredients.data)
-
 export const useDataStore = defineStore('data', {
     state: () => ({
         dough: dough.data.map(doughSizesNorm),

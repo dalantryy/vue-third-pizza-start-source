@@ -56,8 +56,6 @@ const auth = useAuthStore()
 const cart = useCartStore()
 const router = useRouter();
 
-console.log('user', auth.user)
-
 const logout = async () => {
   await auth.logout();
   await router.replace({ name: "login" });

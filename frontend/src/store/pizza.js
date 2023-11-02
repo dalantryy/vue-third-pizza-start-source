@@ -30,26 +30,23 @@ export const usePizzaStore = defineStore('pizza', {
             const hasIngredient = this.ingredients.find((i) => {
                 if (i.value === item.value) {
                     i.count++
-                    console.log(i.value, i.count)
                 }
             })
-            console.log(item, hasIngredient)
         },
         decrementCount(item) {
             const hasIngredient = this.ingredients.find((i) => {
                 if (i.value === item.value) {
                     i.count--
-                    console.log(i.value, i.count)
                 }
             })
         },
         getIngredientCount(item) {
             const hasIngredient = this.ingredients.find((i) => i.value === item.value)
-            console.log('has', hasIngredient)
             if(!!hasIngredient){
                 return hasIngredient.count
             } else {
                 const newIng = {
+                    id: item.id,
                     name: item.name,
                     value: item.value,
                     price: item.price,
