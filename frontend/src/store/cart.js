@@ -30,20 +30,6 @@ export const useCartStore = defineStore('cart', {
                 }
             })
         },
-        incrementMiscCount: state => {
-            return item => state.misc.find((i) => {
-                if (i.id === item) {
-                    i.count++
-                }
-            })
-        },
-        decrementMiscCount: state => {
-            return item => state.misc.find((i) => {
-                if (i.id === item) {
-                    i.count--
-                }
-            })
-        },
         getCartFullPrice: state => {
             const pizzaPrice = state.pizzas.length > 0 ? state.pizzas.reduce((acc, val) => acc + (val.price * val.count), 0) : 0
             const miscPrice = state.misc.reduce((acc, val) => acc + (val.price * val.count), 0)
@@ -53,6 +39,43 @@ export const useCartStore = defineStore('cart', {
     actions: {
         addPizza(pizza){
             this.pizzas[pizza.index] = pizza
+        },
+        incrementMiscCount(item) {
+            const hasMisc = this.misc.find((i) => {
+                if (i.id === item.id) {
+                    i.count++
+                    return true
+                }
+            })
+
+            if(!hasMisc){
+                const newMisc = {
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    count: 1
+                }
+                this.misc.push(newMisc)
+            }
+        },
+        decrementMiscCount(item) {
+            const hasMisc = this.misc.find((i, index) => {
+                if (i.id === item.id) {
+                    if(i.count === 1){
+                        this.misc.splice(index, 1)
+                    } else {
+                        i.count--
+                    }
+                }
+            })
+        },
+        getMiscCount(item) {
+            const hasMisc = this.misc.find((i) => i.id === item.id)
+            if(!!hasMisc){
+                return hasMisc.count
+            } else {
+                return 0
+            }
         },
         getFullOrder(address, phone){
             const user = useAuthStore()
@@ -78,17 +101,19 @@ export const useCartStore = defineStore('cart', {
                 }
             })
 
+            const misc = this.misc.map((el) => {
+                return {
+                    "miscId": el.id,
+                    "quantity": el.count
+                }
+            })
+
             const order = {
                 "userId": userId,
                 "phone": phone,
                 "address": address,
                 "pizzas": pizzas,
-                "misc": [
-                    {
-                        "miscId": 0,
-                        "quantity": 0
-                    }
-                ]
+                "misc": misc
             }
 
             return order

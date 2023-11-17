@@ -26,17 +26,24 @@
 
     <ul class="order__list">
       <li
-          v-for="pizza in order.pizzas"
+          v-for="pizza in profile.history"
           class="order__item"
       >
-        <div class="product">
+        <div
+            v-for="item in pizza.pizzas"
+            class="product"
+        >
           <img src="img/product.svg" class="product__img" width="56" height="56" alt="Капричоза">
           <div class="product__text">
-            <h2>{{pizza.name}}</h2>
+            <h2>{{item.name}}</h2>
             <ul>
-              <li>30 см, на тонком тесте</li>
-              <li>Соус: томатный</li>
-              <li>Начинка: грибы, лук, ветчина, пармезан, ананас, бекон, блю чиз</li>
+              <li>{{item.size.name}}, на {{item.dough.name}} тесте</li>
+              <li>Соус: {{item.sauce.name}}</li>
+              <li>Начинка:
+                <span v-for="ing in item.ingredients">
+                  {{ing.name}}
+                </span>
+              </li>
             </ul>
           </div>
         </div>
@@ -78,6 +85,7 @@
 
   onMounted(async () => {
     await profile.getHistory()
+    console.log('fullHistory', profile.fullOrder)
   })
 
 </script>

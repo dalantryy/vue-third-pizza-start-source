@@ -30,13 +30,29 @@ export const usePizzaStore = defineStore('pizza', {
             const hasIngredient = this.ingredients.find((i) => {
                 if (i.value === item.value) {
                     i.count++
+                    return true
                 }
             })
+
+            if(!hasIngredient){
+                const newIng = {
+                    id: item.id,
+                    name: item.name,
+                    value: item.value,
+                    price: item.price,
+                    count: 1
+                }
+                this.ingredients.push(newIng)
+            }
         },
         decrementCount(item) {
-            const hasIngredient = this.ingredients.find((i) => {
+            const hasIngredient = this.ingredients.find((i, index) => {
                 if (i.value === item.value) {
-                    i.count--
+                    if(i.count === 1){
+                        this.ingredients.splice(index, 1)
+                    } else {
+                        i.count--
+                    }
                 }
             })
         },
@@ -45,15 +61,7 @@ export const usePizzaStore = defineStore('pizza', {
             if(!!hasIngredient){
                 return hasIngredient.count
             } else {
-                const newIng = {
-                    id: item.id,
-                    name: item.name,
-                    value: item.value,
-                    price: item.price,
-                    count: 0
-                }
-                this.ingredients.push(newIng)
-                return newIng.count
+                return 0
             }
         },
         addToCart() {

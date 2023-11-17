@@ -9,10 +9,10 @@
           <p>Основной соус:</p>
 
           <label
-              v-for="sauce in data.sauces"
+              v-for="sauce in sauces"
               :key="sauce.id"
               class="radio ingredients__input"
-              @click="selectSauce(sauce.id)"
+              @click="emits('update:modelValue', sauce.id)"
           >
             <input
                 type="radio"
@@ -28,7 +28,7 @@
 
           <ul class="ingredients__list">
             <li
-                v-for="ingredient in data.ingredients"
+                v-for="ingredient in ingredients"
                 class="ingredients__item"
             >
                 <app-drag
@@ -61,20 +61,29 @@
 
 </template>
 <script setup>
-import { useDataStore, usePizzaStore } from "@/store";
-import { computed } from "vue";
+import { usePizzaStore } from "@/store";
 
 import AppDrag from "@/common/components/AppDrag.vue";
 import AppCounter from "@/common/components/AppCounter.vue";
 
-const data = useDataStore(),
-    pizza = usePizzaStore()
+const pizza = usePizzaStore()
 
-function selectSauce(item) {
-  console.log('select sauce', item)
-  pizza.sauceId = item
-}
+const props = defineProps({
+  modelValue: {
+    type: Number,
+    required: true
+  },
+  sauces: {
+    type: Array,
+    required: true
+  },
+  ingredients: {
+    type: Array,
+    required: true
+  }
+})
 
+const emits = defineEmits(['modelValue:update'])
 </script>
 
 <style lang="scss" scoped>

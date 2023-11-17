@@ -1,69 +1,104 @@
 <template>
-    <main class="content">
-      <form action="#" method="post">
-        <div class="content__wrapper">
-          <h1 class="title title--big">Конструктор пиццы</h1>
-         <constructor-dough
-         />
+  <main class="content">
+    <form action="#" method="post">
+      <div class="content__wrapper">
+        <h1 class="title title--big">Конструктор пиццы</h1>
+        <constructor-dough
+            :items="data.dough"
+            v-model="dough"
+        />
 
-          <constructor-size
+        <constructor-size
+            :items="data.sizes"
+            v-model="size"
+        />
+
+        <constructor-ingredients
+            :sauces="data.sauces"
+            :ingredients="data.ingredients"
+            v-model="sauce"
+        />
+
+
+        <div class="content__pizza">
+          <label class="input">
+            <span class="visually-hidden">Название пиццы</span>
+            <input
+                type="text"
+                name="pizza_name"
+                placeholder="Введите название пиццы"
+                :value="pizza.name"
+                @input="event => pizza.name = event.target.value"
+            >
+          </label>
+
+          <constructor-result
           />
 
-          <constructor-ingredients
-          />
+          <div class="content__result">
+            <p>Итого: {{ pizza.getFullPrice }} ₽</p>
 
-
-          <div class="content__pizza">
-            <label class="input">
-              <span class="visually-hidden">Название пиццы</span>
-              <input
-                  type="text"
-                  name="pizza_name"
-                  placeholder="Введите название пиццы"
-                  :value="pizza.name"
-                  @input="event => pizza.name = event.target.value"
-              >
-            </label>
-
-            <constructor-result
-            />
-
-            <div class="content__result">
-              <p>Итого: {{pizza.getFullPrice}} ₽</p>
-
-              <router-link to="/cart">
-                <app-button
-                    :disabled="!disabledButton()"
-                    @click="pizza.addToCart"
-                />
-              </router-link>
-            </div>
+            <router-link to="/cart">
+              <app-button
+                  :disabled="!disabledButton()"
+                  @click="pizza.addToCart"
+              />
+            </router-link>
           </div>
-
         </div>
 
-      </form>
-    </main>
+      </div>
+
+    </form>
+  </main>
 </template>
 
 <script setup>
-  // import comp
-  import AppButton from "@/common/components/AppButton.vue";
-  import ConstructorDough from "@/modules/constructor/ConstructorDough.vue";
-  import ConstructorResult from "@/modules/constructor/ConstructorResult.vue";
-  import ConstructorIngredients from "@/modules/constructor/ConstructorIngredients.vue";
-  import ConstructorSize from "../modules/constructor/ConstructorSize.vue";
-  import { usePizzaStore } from "@/store";
+// import comp
+import AppButton from "@/common/components/AppButton.vue";
+import ConstructorDough from "@/modules/constructor/ConstructorDough.vue";
+import ConstructorResult from "@/modules/constructor/ConstructorResult.vue";
+import ConstructorIngredients from "@/modules/constructor/ConstructorIngredients.vue";
+import ConstructorSize from "../modules/constructor/ConstructorSize.vue";
+import {usePizzaStore, useDataStore} from "@/store";
+import { computed } from 'vue';
 
-  const pizza = usePizzaStore()
+const data = useDataStore()
+const pizza = usePizzaStore()
 
-  function disabledButton(){
-    const ingredients = pizza.ingredients
-        .map((el) => el.count)
-        .reduce((acc, val) => acc + val, 0)
-
-    return pizza.doughId  && pizza.sauceId  && pizza.sizeId && ingredients > 0
+const size = computed({
+  get() {
+    return pizza.sizeId
+  },
+  set(id){
+    pizza.sizeId = id
   }
+})
+
+const dough = computed({
+  get() {
+    return pizza.doughId
+  },
+  set(id){
+    pizza.doughId = id
+  }
+})
+
+const sauce = computed({
+  get() {
+    return pizza.sauceId
+  },
+  set(id){
+    pizza.sauceId = id
+  }
+})
+function disabledButton() {
+  const ingredients = pizza.ingredients
+      .map((el) => el.count)
+      .reduce((acc, val) => acc + val, 0)
+
+  return pizza.name.length > 0 && pizza.doughId && pizza.sauceId && pizza.sizeId && ingredients > 0
+}
 </script>
 
 <style lang="scss">

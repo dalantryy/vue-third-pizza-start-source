@@ -7,11 +7,11 @@
 
       <div class="sheet__content diameter">
         <label
-            v-for="size in data.sizes"
+            v-for="size in items"
             :key="size.id"
             class="diameter__input"
             :class="`diameter__input--${size.value}`"
-            @click="selectSize(size.id)"
+            @click="emits('update:modelValue', size.id)"
         >
           <input
               type="radio"
@@ -30,6 +30,19 @@
 import { useDataStore, usePizzaStore} from "@/store";
 const data = useDataStore(),
       pizza = usePizzaStore()
+
+const props = defineProps({
+  modelValue: {
+    type: Number,
+    required: true
+  },
+  items: {
+    type: Array,
+    required: true
+  }
+})
+
+const emits = defineEmits(['modelValue:update'])
 
   function selectSize(item){
     console.log('select size', item)

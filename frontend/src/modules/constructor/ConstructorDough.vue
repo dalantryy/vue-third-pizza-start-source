@@ -7,11 +7,11 @@
 
       <div class="sheet__content dough">
         <label
-            v-for="doughItem in data.dough"
+            v-for="doughItem in items"
             :key="doughItem.id"
             class="dough__input"
             :class="`dough__input--${doughItem.value}`"
-            @click="selectDough(doughItem.id)"
+            @click="emits('update:modelValue', doughItem.id)"
         >
           <input
               type="radio"
@@ -31,10 +31,18 @@
   const data = useDataStore()
   const pizza = usePizzaStore()
 
-  function selectDough(item){
-    pizza.doughId = item
-  }
+  const props = defineProps({
+    modelValue: {
+      type: Number,
+      required: true
+    },
+    items: {
+      type: Array,
+      required: true
+    }
+  })
 
+  const emits = defineEmits(['modelValue:update'])
 </script>
 
 <style lang="scss" scoped>

@@ -1,13 +1,54 @@
 import {defineStore} from "pinia";
 import addressesJSON from "@/mocks/addresses.json";
 import resources from "@/services/resources";
+import {useDataStore} from "@/store";
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
         addresses: addressesJSON,
         history: []
     }),
-    getters: {},
+    getters: {
+        fullOrder: (state) => {
+            const data = useDataStore()
+            console.log('data', data)
+            console.log('orders', state.history)
+
+            return state.history.map((el) => {
+                console.log('el', el)
+                const pizza = el.orderPizzas?.map((el) => {
+                    return {
+                        dough: data.dough.find((i) => i.id === el.doughId),
+                        name: el.name,
+                        id: el.id,
+                        orderId: el.orderId,
+                        quantity: el.quantity,
+                        sauce: data.sauces.find((i) => i.id === el.sauceId),
+                        size: data.sizes.find((i) => i.id === el.sizeId),
+                        ingredients: el.ingredients.map((el) => {
+                            return {
+                                ...data.ingredients.find((i) => i.id === el.id),
+                                quantity: el.quantity
+                            }
+                        })
+                    }
+                })
+
+                const misc = el.orderMisc?.map((el) => {
+                    return {
+                        ...data.misc.find((i) => i.id === el.id),
+                        quantity: el.quantity
+                    }
+                })
+                return {
+                    pizzas: {
+                        ...pizza,
+                        ...misc
+                    }
+                }
+            })
+        }
+    },
     actions: {
         async getAddresses() {
             const result = await resources.address.getAddresses()

@@ -83,11 +83,11 @@
 
               <div class="additional-list__wrapper">
                 <app-counter
-                    :count="misc.count"
-                    :disabledDecrement="misc.count === 0"
+                    :count="cart.getMiscCount(misc)"
+                    :disabledDecrement="cart.getMiscCount(misc) === 0"
                     :disabledIncrement="false"
-                    @decrement="cart.decrementMiscCount(misc.id)"
-                    @increment="cart.incrementMiscCount(misc.id)"
+                    @decrement="cart.decrementMiscCount(misc)"
+                    @increment="cart.incrementMiscCount(misc)"
                 />
 
                 <div class="additional-list__price">
@@ -140,7 +140,7 @@
             </label>
 
             <div
-                v-if="deliveryType === 'newAddress'"
+                v-if="deliveryType !== 'rest'"
                 class="cart-form__address"
             >
               <span
@@ -188,10 +188,6 @@
             </div>
           </div>
         </div>
-        {{ street }}
-        {{ building }}
-        {{ flat }}
-        {{ phone }}
       </div>
     </main>
     <section class="footer">
@@ -209,41 +205,54 @@
       </div>
 
       <div class="footer__submit">
-        <button type="submit" class="button">Оформить заказ</button>
+        <button
+            type="submit"
+            class="button"
+            :disabled="!validateContact"
+        >
+          Оформить заказ
+        </button>
       </div>
     </section>
   </form>
 
-  <div
-      v-show="showPopup"
-      class="popup">
-    <router-link
-        to="/"
-        class="close"
-        @click="cart.$reset()"
+  <transition>
+    <div
+        v-show="showPopup"
+        class="popup__wrapper"
     >
-      <span class="visually-hidden">Закрыть попап</span>
-    </router-link>
-    <div class="popup__title">
-      <h2 class="title">Спасибо за заказ</h2>
+      <div class="popup">
+        <router-link
+            to="/"
+            class="close"
+            @click="cart.$reset()"
+        >
+          <span class="visually-hidden">Закрыть попап</span>
+        </router-link>
+        <div class="popup__title">
+          <h2 class="title">Спасибо за заказ</h2>
+        </div>
+        <p>Мы начали готовить Ваш заказ, скоро привезём его вам ;)</p>
+        <div class="popup__button">
+          <router-link
+              to="/"
+              class="button"
+              @click="cart.$reset()"
+          >
+            Отлично, я жду!
+          </router-link>
+        </div>
+      </div>
     </div>
-    <p>Мы начали готовить Ваш заказ, скоро привезём его вам ;)</p>
-    <div class="popup__button">
-      <router-link
-        to="/"
-        class="button"
-        @click="cart.$reset()"
-      >
-        Отлично, я жду!
-      </router-link>
-    </div>
-  </div>
+  </transition>
+
 </template>
+
 
 <script setup>
 import AppCounter from "@/common/components/AppCounter.vue";
 import {useCartStore, useDataStore, usePizzaStore, useProfileStore} from "../store";
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import {useAuthStore} from "@/store/auth";
 
 const cart = useCartStore()
@@ -253,9 +262,9 @@ const data = useDataStore()
 const auth = useAuthStore()
 
 const deliveryType = ref('rest')
-const street = ref('')
-const building = ref('')
-const flat = ref('')
+const street = ref('rest')
+const building = ref('rest')
+const flat = ref('rest')
 const disabled = ref(false)
 const phone = ref('')
 const showPopup = ref(false)
@@ -263,11 +272,26 @@ const showPopup = ref(false)
 watch(deliveryType, (newValue, oldValue) => {
   if (newValue !== 'newAddress' && newValue !== 'rest') {
     const res = profile.getFullAddress(newValue)
-
     street.value = res.street
     building.value = res.building
     flat.value = res.flat
+
+    disabled.value = true
+  } else if (newValue === 'rest') {
+    street.value = 'rest'
+    building.value = 'rest'
+    flat.value = 'rest'
+  } else {
+    street.value = ''
+    building.value = ''
+    flat.value = ''
+    disabled.value = false
   }
+})
+
+const validateContact = computed(() => {
+  console.log(street.value.length > 0 && building.value.length > 0 && phone.value.length >= 12)
+  return street.value.length > 0 && building.value.length > 0 && phone.value.length >= 12
 })
 
 onMounted(async () => {
@@ -292,18 +316,28 @@ async function submitOrder() {
     }
   }
   const order = cart.getFullOrder(address, phone.value)
-  try {
-    await cart.createOrder(order)
-    console.log('done')
-  } catch(e){
-    console.log('sumbit error', e.message)
-  }
 
+  if (auth.isAuthenticated) {
+    try {
+      await cart.createOrder(order)
+      console.log('order done', order)
+    } catch (e) {
+      console.log('sumbit error', e.message)
+    }
+  }
   showPopup.value = true
 }
 </script>
 
 
 <style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
 
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
 </style>

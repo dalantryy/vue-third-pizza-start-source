@@ -13,50 +13,48 @@
           @drop="moveIngredient"
           class="pizza__wrapper"
       >
-        <div
-            v-for="ingredient in pizzaStore.ingredients"
-            class="pizza__filling"
-            :class="generateFillingClass(ingredient.value, ingredient.count)"
-        >
-        </div>
+        <transition-group name="ingredients">
+          <div
+              v-for="ingredient in pizzaStore.ingredients"
+              :key="ingredient.id"
+              class="pizza__filling"
+              :class="generateFillingClass(ingredient.value, ingredient.count)"
+          >
+          </div>
+        </transition-group>
       </app-drop>
     </div>
   </div>
-<!--  <div>-->
-<!--    <div>dough: {{ pizzaStore.doughId }}</div>-->
-<!--    <div>sauce: {{ pizzaStore.sauceId }}</div>-->
-<!--    <div>size: {{ pizzaStore.sizeId }}</div>-->
-<!--    <div>ingredients: {{ pizzaStore.ingredients }}</div>-->
-<!--  </div>-->
 </template>
 
 <script setup>
-  import AppDrop from "@/common/components/AppDrop.vue";
-  import AppButton from "@/common/components/AppButton.vue";
+import AppDrop from "@/common/components/AppDrop.vue";
+import AppButton from "@/common/components/AppButton.vue";
 
-  import { usePizzaStore } from "@/store";
-  const pizzaStore = usePizzaStore()
+import {usePizzaStore} from "@/store";
+
+const pizzaStore = usePizzaStore()
 
 
-  const emits = defineEmits(['drop'])
+const emits = defineEmits(['drop'])
 
-  function moveIngredient (ingredient) {
-    pizzaStore.incrementCount(ingredient.value)
+function moveIngredient(ingredient) {
+  pizzaStore.incrementCount(ingredient)
+}
+
+function generateFillingClass(value, count) {
+  if (count < 1) return false
+  let fillingClass = 'pizza__filling--' + value
+  let countClass = ''
+  if (count === 2) {
+    countClass = 'pizza__filling--second'
+  } else if (count === 3) {
+    countClass = 'pizza__filling--third'
   }
+  return fillingClass + ' ' + countClass
+}
 
-  function generateFillingClass(value, count){
-    if (count < 1) return false
-    let fillingClass = 'pizza__filling--' + value
-    let countClass = ''
-    if (count === 2){
-      countClass = 'pizza__filling--second'
-    } else if (count === 3){
-      countClass = 'pizza__filling--third'
-    }
-    return fillingClass + ' ' + countClass
-  }
-
-  // console.log('con res',props.pizza)
+// console.log('con res',props.pizza)
 </script>
 
 <style lang="scss" scoped>
@@ -112,7 +110,6 @@
   &::before,
   &::after {
     display: none;
-
     position: absolute;
     top: 0;
     left: 0;
@@ -126,23 +123,26 @@
   }
 
   &--second {
+
+    transition: all 0.5s ease;
+    opacity: 1;
     &::before {
       display: block;
-
       transform: rotate(45deg);
     }
   }
 
   &--third {
+
+    transition: all 0.5s ease;
+    opacity: 1;
     &::before {
       display: block;
-
       transform: rotate(45deg);
     }
 
     &::after {
       display: block;
-
       transform: rotate(-45deg);
     }
   }
@@ -235,6 +235,26 @@
   &--tomatoes.pizza__filling--second::before,
   &--tomatoes.pizza__filling--third::after {
     background-image: url("@/assets/img/filling-big/tomatoes.svg");
+  }
+}
+
+.ingredients-enter-active,
+.ingredients-leave-active {
+  transition: all 0.5s ease;
+}
+
+.ingredients-enter-from,
+.ingredients-leave-to {
+  opacity: 0;
+  transform: scale(1.5);
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
