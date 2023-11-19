@@ -12,7 +12,7 @@ export const useProfileStore = defineStore('profile', {
         fullOrder: (state) => {
             const data = useDataStore()
             console.log('data', data)
-            console.log('orders', state.history)
+            console.log('orders', state.history);
 
             return state.history.map((el) => {
                 console.log('el', el)

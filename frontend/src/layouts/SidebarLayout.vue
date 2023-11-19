@@ -5,7 +5,7 @@
           :to="{name: 'home'}"
           class="logo layout__logo"
       >
-        <img src="img/logo.svg" alt="V!U!E! Pizza logo" width="90" height="40">
+        <img src="@/assets/img/logo.svg" alt="V!U!E! Pizza logo" width="90" height="40">
       </router-link>
 
       <slot name="sidebar"/>

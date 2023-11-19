@@ -1,4 +1,3 @@
-import Axios from 'axios'
 import { ApiService } from "@/services/api/api.service";
 import axios from "axios";
 

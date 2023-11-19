@@ -39,7 +39,8 @@ export const useAuthStore = defineStore("auth", {
           const profileStore = useProfileStore()
 
             /* Выполняем цепочку действий по получению данных, необходимых для нормальной работы приложения */
-            const res1 = await resources.auth.whoami()
+            const res1 = await resources.auth.whoami();
+
             if (res1.__state !== 'success'){
                 await this.logout();
                 return;

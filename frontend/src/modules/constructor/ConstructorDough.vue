@@ -42,7 +42,7 @@
     }
   })
 
-  const emits = defineEmits(['modelValue:update'])
+  const emits = defineEmits(['update:modelValue'])
 </script>
 
 <style lang="scss" scoped>

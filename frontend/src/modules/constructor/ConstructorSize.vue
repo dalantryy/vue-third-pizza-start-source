@@ -42,10 +42,5 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['modelValue:update'])
-
-  function selectSize(item){
-    console.log('select size', item)
-    pizza.sizeId = item
-  }
+const emits = defineEmits(['update:modelValue'])
 </script>
