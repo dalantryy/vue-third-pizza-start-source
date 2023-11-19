@@ -1,16 +1,19 @@
 <template>
   <app-layout>
-<!--    <router-view v-slot="{ Component }">-->
-<!--      <Transition name="slide" mode="out-in">-->
-<!--        <component :is="Component" />-->
-<!--      </Transition>-->
-<!--    </router-view>-->
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <Transition name="slide" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </router-view>
+<!--    <router-view />-->
   </app-layout>
 </template>
 
 <script setup>
   import AppLayout from "@/layouts/AppLayout.vue";
+  import {useAuthStore} from "@/store/auth";
+  let auth = useAuthStore();
+  auth.whoami();
 </script>
 
 <style lang="scss">

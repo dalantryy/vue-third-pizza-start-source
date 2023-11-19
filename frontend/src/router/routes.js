@@ -1,29 +1,33 @@
 import {isLoggedIn} from "@/middlewares/isLoggedIn";
+
 export default [
     {
         path: "/",
         name: "home",
         component: () => import("@/views/HomeView.vue"),
-        meta: { layout: "AppLayoutDefault" },
+        meta: {layout: "AppLayoutDefault"},
     },
     {
         path: "/login",
         name: "login",
         component: () => import("@/views/LoginView.vue"),
-        meta: { layout: "SimpleLayout" },
+        meta: {layout: "SimpleLayout"},
     },
     {
         path: "/cart",
         name: "cart",
         component: () => import("@/views/CartView.vue"),
-        meta: { layout: "AppLayoutDefault" },
+        meta: {layout: "AppLayoutDefault"},
     },
     {
         path: "/user",
         name: "user",
         component: () => import("@/views/UserView.vue"),
-        meta: { layout: "AppLayoutDefault" },
-        middlewares: [isLoggedIn],
+        meta: {
+            layout: "AppLayoutDefault",
+            middlewares: [isLoggedIn],
+        },
+
         children: [
             {
                 path: "orders",

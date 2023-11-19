@@ -54,18 +54,18 @@
 
     <ul class="order__additional">
       <li>
-        <img src="img/cola.svg" width="20" height="30" alt="Coca-Cola 0,5 литра">
+        <img src="/img/cola.svg" width="20" height="30" alt="Coca-Cola 0,5 литра">
         <p>
           <span>Coca-Cola 0,5 литра</span>
           <b>56 ₽</b>
         </p>
       </li>
       <li>
-        <img src="img/sauce.svg" width="20" height="30" alt="Острый соус">
+        <img src="/img/sauce.svg" width="20" height="30" alt="Острый соус">
         <span>Острый соус <br>30 ₽</span>
       </li>
       <li>
-        <img src="img/potato.svg" width="20" height="30" alt="Картошка из печи">
+        <img src="/img/potato.svg" width="20" height="30" alt="Картошка из печи">
         <p>
           <span>Картошка из печи</span>
           <b>170 ₽</b>
